@@ -9,13 +9,14 @@ from PIL import Image
 #import simple_autoencoder.utils as utils
 
 DEFAULT_INPUT_MODEL='model'
+DEFAULT_INPUT_GRAPHDEF='graph.pb'
 
 DEFAULT_INPUT_WIDTH=128
 DEFAULT_INPUT_HEIGHT=128
 
 def create_argument_parser():
     parser = ArgumentParser()
-    parser.add_argument('-i','--input-model', type=str, default=DEFAULT_INPUT_MODEL)
+    parser.add_argument('-i','--input-graphdef', type=str, default=DEFAULT_INPUT_GRAPHDEF)
     return parser
 
 def add_application_arguments(parser):
@@ -33,11 +34,13 @@ def proc(args):
         allow_soft_placement=True, log_device_placement=False)
     sess = tf.Session(config=config_proto)
 
-    new_saver = tf.train.import_meta_graph(args.input_model+'/model.meta')
-    new_saver.restore(sess, args.input_model+'/model')
-    
-    inference_op = tf.get_collection('inference_op')[0]
-    images_placeholder = tf.get_collection('images_placeholder')[0]
+    with tf.gfile.FastGFile(args.input_graphdef, 'rb') as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        _ = tf.import_graph_def(graph_def, name='')
+
+    images_placeholder = tf.get_default_graph().get_tensor_by_name('input/images_placeholder:0')
+    inference_op = tf.get_default_graph().get_tensor_by_name('model/out_node:0')
 
     for imagepath in args.imagefiles:
         input_image = Image.open(imagepath)

@@ -42,13 +42,14 @@ def main():
 def proc(args):
     with tf.Graph().as_default(), tf.device('/cpu:0'):
         with tf.name_scope('input'):
-            images = tf.placeholder(
+            images = tf.placeholder(name='images_placeholder',
                 shape=[args.minibatch_size, args.height, args.width, 3], dtype=tf.float32)
             tf.add_to_collection('images_placeholder',images)
 
         with tf.device('/gpu:0'):
             with tf.variable_scope('model'):
                 out_images = model.inference(images)
+                out_images = tf.identity(out_images, name='out_node')
                 tf.add_to_collection('inference_op',out_images)
 
         inference_variables = [
@@ -63,6 +64,7 @@ def proc(args):
         sess.run(tf.global_variables_initializer())
 
         inference_saver = tf.train.Saver(var_list=inference_variables)
+        #inference_saver = tf.train.Saver()
         latest_checkpoint = tf.train.latest_checkpoint(args.input_model)
 
         if latest_checkpoint:
@@ -73,6 +75,7 @@ def proc(args):
         # run
         converted_dir = Path(args.output_model)
         converted_dir.mkdir(parents=True, exist_ok=True)
+        tf.train.write_graph(sess.graph.as_graph_def(), str(converted_dir), 'model.pb')
         inference_saver.save(sess, str(converted_dir/'model'))
 
 if __name__ == '__main__':

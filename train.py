@@ -68,6 +68,7 @@ def proc(args):
         with tf.device('/gpu:0'):
             with tf.variable_scope('model'):
                 out_images = model.inference(images)
+                out_images = tf.identity(out_images, name='out_node')
                 loss = model.loss(images, out_images)
                 train_op = model.train(loss, global_step)
 
