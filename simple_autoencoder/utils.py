@@ -1,6 +1,8 @@
 import tensorflow as tf
 
 def read_image_op(filename_queue, reader, height, width):
+    # 画像読み込みのオペレーションです。
+    # TensorFlowのチュートリアルでもよく見かけるやつ。
     _, raw = reader.read(filename_queue)
 
     read_image = tf.image.decode_jpeg(raw, channels=3)
