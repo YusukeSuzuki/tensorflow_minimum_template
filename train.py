@@ -38,9 +38,9 @@ def create_argument_parser():
     parser.add_argument('-o','--output-model', type=str, default=DEFAULT_OUTPUT_MODEL)
 
 
-    parser.add_argument('--input_threads', type=int, default=DEFAULT_INPUT_THREADS)
-    parser.add_argument('--input_queue_min', type=int, default=DEFAULT_INPUT_QUEUE_MIN)
-    parser.add_argument('--input_queue_max', type=int, default=DEFAULT_INPUT_QUEUE_MAX)
+    parser.add_argument('--input-threads', type=int, default=DEFAULT_INPUT_THREADS)
+    parser.add_argument('--input-queue_min', type=int, default=DEFAULT_INPUT_QUEUE_MIN)
+    parser.add_argument('--input-queue-max', type=int, default=DEFAULT_INPUT_QUEUE_MAX)
     return parser
 
 def add_application_arguments(parser):
