@@ -151,10 +151,10 @@ def proc(args):
             # scalarのログであればそれほど重くはありませんが画像やヒストグラムは
             # 書き出し処理が重くなりがちなので回数は適宜調整したほうがよいでしょう。
             # モデルや規模によりますが勾配のヒストグラムは500回から1000回ごとで十分だと思います。
-            if gs % 10 == 0:
+            if gs % 100 == 0:
                 print("global_step = {}".format(gs))
                 _, logs =  sess.run([train_op, log_op])
-                writer.add_summary(logs, i)
+                writer.add_summary(logs, gs)
             else:
                 _ = sess.run([train_op])
 
